@@ -1,4 +1,4 @@
-# Spring Boot WebFlux GraphQL Pattern Service
+# Spring Boot GraphQL Pattern Service
 
 A reactive Spring Boot application demonstrating GraphQL implementation with WebFlux, showcasing a pattern management system.
 
