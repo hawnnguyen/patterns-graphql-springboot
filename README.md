@@ -12,7 +12,7 @@ A reactive Spring Boot application demonstrating GraphQL implementation with Web
 
 ## Technology Stack
 
-- Java 23
+- Java 21
 - Spring Boot 3.2.2
 - Spring WebFlux
 - GraphQL Spring Boot Starter
