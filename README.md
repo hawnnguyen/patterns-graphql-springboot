@@ -220,6 +220,155 @@ Run tests using:
 mvn test
 ```
 
+## GraphiQL Examples
+
+The application includes GraphiQL, an in-browser IDE for exploring GraphQL. Access it at:
+```
+http://localhost:8080/graphiql
+```
+
+### Example 1: Query All Patterns
+
+Request:
+```graphql
+query {
+  patterns {
+    id
+    name
+    quadrant
+    ring
+    tags {
+      tagId
+      tagName
+      tagValue
+    }
+  }
+}
+```
+
+Response:
+```json
+{
+  "data": {
+    "patterns": [
+      {
+        "id": "1",
+        "name": "ECS with MSK - Rediscache",
+        "quadrant": "enterprise",
+        "ring": "identify",
+        "tags": [
+          {
+            "tagId": "architecturedesign",
+            "tagName": "Architecture Design",
+            "tagValue": "Microservices Architecture"
+          },
+          {
+            "tagId": "platform",
+            "tagName": "Platform",
+            "tagValue": "AWS"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Example 2: Create Pattern Mutation
+
+Request:
+```graphql
+mutation {
+  createPattern(pattern: {
+    id: "2"
+    title: "Cloud Native Pattern"
+    name: "Cloud Native Pattern"
+    url: "/solution/cloud-native"
+    ring: "trial"
+    quadrant: "tools"
+    status: "New"
+    isNew: "TRUE"
+    description: "Cloud native architecture pattern"
+    pattern: []
+    useCase: ["Microservices", "Containerization"]
+    tags: [{
+      tagId: "cloud"
+      tagName: "Cloud"
+      tagValue: "GCP"
+      className: "fas fa-cloud"
+    }]
+  }) {
+    id
+    name
+    quadrant
+    ring
+    tags {
+      tagValue
+    }
+  }
+}
+```
+
+Response:
+```json
+{
+  "data": {
+    "createPattern": {
+      "id": "2",
+      "name": "Cloud Native Pattern",
+      "quadrant": "tools",
+      "ring": "trial",
+      "tags": [
+        {
+          "tagValue": "GCP"
+        }
+      ]
+    }
+  }
+}
+```
+
+### Example 3: Query Patterns by Quadrant
+
+Request:
+```graphql
+query {
+  patternsByQuadrant(quadrant: "enterprise") {
+    id
+    name
+    quadrant
+    tags {
+      tagValue
+    }
+  }
+}
+```
+
+Response:
+```json
+{
+  "data": {
+    "patternsByQuadrant": [
+      {
+        "id": "1",
+        "name": "ECS with MSK - Rediscache",
+        "quadrant": "enterprise",
+        "tags": [
+          {
+            "tagValue": "Microservices Architecture"
+          },
+          {
+            "tagValue": "AWS"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+![GraphiQL Interface][def]
+
 ## Recent Changes
 
 1. Updated GraphQL Schema:
@@ -241,3 +390,6 @@ mvn test
    - Added comprehensive test cases
    - Implemented test ordering for better isolation
    - Added assertions for new fields and relationships
+
+
+[def]: docs/graphql-interface-pattern.png
