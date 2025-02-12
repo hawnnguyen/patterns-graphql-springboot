@@ -241,6 +241,7 @@ query {
       tagId
       tagName
       tagValue
+      className
     }
   }
 }
@@ -260,12 +261,57 @@ Response:
           {
             "tagId": "architecturedesign",
             "tagName": "Architecture Design",
-            "tagValue": "Microservices Architecture"
+            "tagValue": "Microservices Architecture",
+            "className": "fas fa-cubes"
           },
           {
             "tagId": "platform",
             "tagName": "Platform",
             "tagValue": "AWS"
+          }
+        ]
+      },
+      {
+        "id": "15",
+        "name": "Data Broker for SaaS, AWS, and On-Premises Systems",
+        "quadrant": "data",
+        "ring": "identify",
+        "tags": [
+          {
+            "tagId": "architecturedesign",
+            "tagName": "Architecture Design",
+            "tagValue": "Data Broker",
+            "className": "fas fa-network-wired"
+          },
+          {
+            "tagId": "architecturedesign",
+            "tagName": "Architecture Design",
+            "tagValue": "Event Driven Architecture",
+            "className": "fa-broadcast-tower"
+          }
+        ]
+      },
+      {
+        "id": "16",
+        "name": "External API Client",
+        "quadrant": "integration",
+        "ring": "identify",
+        "tags": [
+          {
+            "tagId": "platform",
+            "tagName": "Platform",
+            "tagValue": "AWS"
+          },
+          {
+            "tagId": "platform",
+            "tagName": "Platform",
+            "tagValue": "ECS"
+          },
+          {
+            "tagId": "architecturedesign",
+            "tagName": "Architecture Design",
+            "tagValue": "Microservices Architecture",
+            "className": "fas fa-cubes"
           }
         ]
       }
@@ -274,71 +320,18 @@ Response:
 }
 ```
 
-### Example 2: Create Pattern Mutation
-
-Request:
-```graphql
-mutation {
-  createPattern(pattern: {
-    id: "2"
-    title: "Cloud Native Pattern"
-    name: "Cloud Native Pattern"
-    url: "/solution/cloud-native"
-    ring: "trial"
-    quadrant: "tools"
-    status: "New"
-    isNew: "TRUE"
-    description: "Cloud native architecture pattern"
-    pattern: []
-    useCase: ["Microservices", "Containerization"]
-    tags: [{
-      tagId: "cloud"
-      tagName: "Cloud"
-      tagValue: "GCP"
-      className: "fas fa-cloud"
-    }]
-  }) {
-    id
-    name
-    quadrant
-    ring
-    tags {
-      tagValue
-    }
-  }
-}
-```
-
-Response:
-```json
-{
-  "data": {
-    "createPattern": {
-      "id": "2",
-      "name": "Cloud Native Pattern",
-      "quadrant": "tools",
-      "ring": "trial",
-      "tags": [
-        {
-          "tagValue": "GCP"
-        }
-      ]
-    }
-  }
-}
-```
-
-### Example 3: Query Patterns by Quadrant
+### Example 2: Query Patterns by Quadrant
 
 Request:
 ```graphql
 query {
-  patternsByQuadrant(quadrant: "enterprise") {
+  patternsByQuadrant(quadrant: "data") {
     id
     name
     quadrant
     tags {
       tagValue
+      className
     }
   }
 }
@@ -350,15 +343,17 @@ Response:
   "data": {
     "patternsByQuadrant": [
       {
-        "id": "1",
-        "name": "ECS with MSK - Rediscache",
-        "quadrant": "enterprise",
+        "id": "15",
+        "name": "Data Broker for SaaS, AWS, and On-Premises Systems",
+        "quadrant": "data",
         "tags": [
           {
-            "tagValue": "Microservices Architecture"
+            "tagValue": "Data Broker",
+            "className": "fas fa-network-wired"
           },
           {
-            "tagValue": "AWS"
+            "tagValue": "Event Driven Architecture",
+            "className": "fa-broadcast-tower"
           }
         ]
       }
@@ -367,7 +362,47 @@ Response:
 }
 ```
 
-![GraphiQL Interface][def]
+### Example 3: Query Patterns by Ring
+
+Request:
+```graphql
+query {
+  patternsByRing(ring: "identify") {
+    id
+    name
+    ring
+    quadrant
+  }
+}
+```
+
+Response:
+```json
+{
+  "data": {
+    "patternsByRing": [
+      {
+        "id": "1",
+        "name": "ECS with MSK - Rediscache",
+        "ring": "identify",
+        "quadrant": "enterprise"
+      },
+      {
+        "id": "15",
+        "name": "Data Broker for SaaS, AWS, and On-Premises Systems",
+        "ring": "identify",
+        "quadrant": "data"
+      },
+      {
+        "id": "16",
+        "name": "External API Client",
+        "ring": "identify",
+        "quadrant": "integration"
+      }
+    ]
+  }
+}
+```
 
 ## Recent Changes
 

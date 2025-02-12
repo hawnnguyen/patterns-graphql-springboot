@@ -52,16 +52,13 @@ class PatternServiceTest {
     @Test
     void getAllPatterns_ShouldReturnPatterns() {
         StepVerifier.create(patternService.getAllPatterns())
-                .assertNext(pattern -> {
-                    assertNotNull(pattern);
-                    assertEquals("1", pattern.getId());
-                    assertEquals("ECS with MSK - Rediscache", pattern.getName());
-                })
+                .expectNextCount(3)  // Expect all three patterns
                 .verifyComplete();
     }
 
     @Test
     void getPatternById_ShouldReturnPattern() {
+        // Test existing patterns
         StepVerifier.create(patternService.getPatternById("1"))
                 .assertNext(pattern -> {
                     assertNotNull(pattern);
@@ -74,6 +71,30 @@ class PatternServiceTest {
                 })
                 .verifyComplete();
 
+        StepVerifier.create(patternService.getPatternById("15"))
+                .assertNext(pattern -> {
+                    assertNotNull(pattern);
+                    assertEquals("15", pattern.getId());
+                    assertEquals("Data Broker for SaaS, AWS, and On-Premises Systems", pattern.getName());
+                    assertEquals("data", pattern.getQuadrant());
+                    assertEquals("identify", pattern.getRing());
+                    assertNotNull(pattern.getTags());
+                    assertEquals(2, pattern.getTags().size());
+                })
+                .verifyComplete();
+
+        StepVerifier.create(patternService.getPatternById("16"))
+                .assertNext(pattern -> {
+                    assertNotNull(pattern);
+                    assertEquals("16", pattern.getId());
+                    assertEquals("External API Client", pattern.getName());
+                    assertEquals("integration", pattern.getQuadrant());
+                    assertEquals("identify", pattern.getRing());
+                    assertNotNull(pattern.getTags());
+                    assertEquals(3, pattern.getTags().size());
+                })
+                .verifyComplete();
+
         // Test non-existent pattern
         StepVerifier.create(patternService.getPatternById("999"))
                 .verifyComplete();
@@ -81,11 +102,30 @@ class PatternServiceTest {
 
     @Test
     void getPatternsByQuadrant_ShouldReturnPatterns() {
+        // Test enterprise quadrant
         StepVerifier.create(patternService.getPatternsByQuadrant("enterprise"))
                 .assertNext(pattern -> {
                     assertNotNull(pattern);
                     assertEquals("enterprise", pattern.getQuadrant());
                     assertEquals("1", pattern.getId());
+                })
+                .verifyComplete();
+
+        // Test data quadrant
+        StepVerifier.create(patternService.getPatternsByQuadrant("data"))
+                .assertNext(pattern -> {
+                    assertNotNull(pattern);
+                    assertEquals("data", pattern.getQuadrant());
+                    assertEquals("15", pattern.getId());
+                })
+                .verifyComplete();
+
+        // Test integration quadrant
+        StepVerifier.create(patternService.getPatternsByQuadrant("integration"))
+                .assertNext(pattern -> {
+                    assertNotNull(pattern);
+                    assertEquals("integration", pattern.getQuadrant());
+                    assertEquals("16", pattern.getId());
                 })
                 .verifyComplete();
 
@@ -101,17 +141,14 @@ class PatternServiceTest {
 
     @Test
     void getPatternsByRing_ShouldReturnPatterns() {
+        // All patterns are in the "identify" ring
         StepVerifier.create(patternService.getPatternsByRing("identify"))
-                .assertNext(pattern -> {
-                    assertNotNull(pattern);
-                    assertEquals("identify", pattern.getRing());
-                    assertEquals("1", pattern.getId());
-                })
+                .expectNextCount(3)
                 .verifyComplete();
 
         // Test case-insensitive matching
         StepVerifier.create(patternService.getPatternsByRing("IDENTIFY"))
-                .assertNext(pattern -> assertEquals("identify", pattern.getRing()))
+                .expectNextCount(3)
                 .verifyComplete();
 
         // Test non-existent ring
