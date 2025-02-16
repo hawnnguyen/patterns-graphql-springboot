@@ -40,6 +40,14 @@ The application follows a clean architecture with proper separation of concerns:
 - PatternRepository: JPA repository for pattern operations
 - TagRepository: JPA repository for tag operations
 
+## Running the Application
+
+1. Clone the repository
+2. Build the project: `mvn clean package`
+3. Run the application: `mvn spring-boot:run`
+4. Access GraphiQL: http://localhost:8080/graphiql
+5. Access H2 Console: http://localhost:8080/h2-console
+
 
 ## GraphQL Schema
 
@@ -87,6 +95,72 @@ query {
 }
 ```
 
+### Get Patterns by Quadrant
+```graphql
+query {
+  patternsByQuadrant(quadrant: "enterprise") {
+    id
+    title
+    quadrant
+    ring
+    tags {
+      tagName
+      tagValue
+    }
+  }
+}
+```
+
+### Get Patterns by Ring
+```graphql
+query {
+  patternsByRing(ring: "identify") {
+    id
+    title
+    quadrant
+    ring
+    status
+    tags {
+      tagName
+      tagValue
+    }
+  }
+}
+```
+
+### Get Patterns by Phase
+```graphql
+query {
+  patternsByPhase(phase: "development") {
+    id
+    title
+    phase
+    status
+    tags {
+      tagName
+      tagValue
+    }
+  }
+}
+```
+
+### Get Patterns by Status
+```graphql
+query {
+  patternsByStatus(status: "active") {
+    id
+    title
+    quadrant
+    ring
+    status
+    tags {
+      tagName
+      tagValue
+    }
+  }
+}
+```
+
 ### Create Pattern
 ```graphql
 mutation {
@@ -116,13 +190,6 @@ mutation {
 }
 ```
 
-## Running the Application
-
-1. Clone the repository
-2. Build the project: `mvn clean package`
-3. Run the application: `mvn spring-boot:run`
-4. Access GraphiQL: http://localhost:8080/graphiql
-5. Access H2 Console: http://localhost:8080/h2-console
 
 ## Recent Updates
 

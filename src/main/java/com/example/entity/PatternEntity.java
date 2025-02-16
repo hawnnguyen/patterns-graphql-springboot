@@ -25,6 +25,7 @@ public class PatternEntity {
     private String status;
     private String isNew;
     private String description;
+    private String phase;
     
     @ElementCollection
     @CollectionTable(name = "pattern_patterns", joinColumns = @JoinColumn(name = "pattern_id"))

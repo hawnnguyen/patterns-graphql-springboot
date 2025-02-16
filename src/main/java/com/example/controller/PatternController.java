@@ -37,6 +37,16 @@ public class PatternController {
         return patternService.getPatternsByRing(ring);
     }
 
+    @QueryMapping
+    public List<Pattern> patternsByPhase(@Argument String phase) {
+        return patternService.getPatternsByPhase(phase);
+    }
+
+    @QueryMapping
+    public List<Pattern> patternsByStatus(@Argument String status) {
+        return patternService.getPatternsByStatus(status);
+    }
+
     @MutationMapping
     public Pattern createPattern(@Argument("pattern") PatternInput input) {
         Pattern pattern = convertInputToPattern(input);

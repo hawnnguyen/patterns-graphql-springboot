@@ -10,4 +10,6 @@ import java.util.List;
 public interface PatternRepository extends JpaRepository<PatternEntity, String> {
     List<PatternEntity> findByQuadrantIgnoreCase(String quadrant);
     List<PatternEntity> findByRingIgnoreCase(String ring);
+    List<PatternEntity> findByPhaseIgnoreCase(String phase);
+    List<PatternEntity> findByStatusIgnoreCase(String status);
 }

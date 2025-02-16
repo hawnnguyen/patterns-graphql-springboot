@@ -21,6 +21,7 @@ public class Pattern {
     private String status;
     private String isNew;
     private String description;
+    private String phase;
     private List<String> pattern;
     private List<String> useCase;
     private List<Tag> tags;

@@ -15,6 +15,7 @@ type Pattern {
     status: String
     isNew: String
     description: String
+    phase: String
     pattern: [String]
     useCase: [String]
     tags: [Tag]
@@ -37,6 +38,7 @@ input PatternInput {
     status: String
     isNew: String
     description: String
+    phase: String
     pattern: [String]
     useCase: [String]
     tags: [TagInput]
@@ -47,6 +49,8 @@ type Query {
     patternById(id: ID!): Pattern
     patternsByQuadrant(quadrant: String!): [Pattern]!
     patternsByRing(ring: String!): [Pattern]!
+    patternsByPhase(phase: String!): [Pattern]!
+    patternsByStatus(status: String!): [Pattern]!
 }
 
 type Mutation {

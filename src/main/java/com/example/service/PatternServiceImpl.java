@@ -125,6 +125,20 @@ public class PatternServiceImpl implements PatternService {
     }
 
     @Override
+    public List<Pattern> getPatternsByPhase(String phase) {
+        return patternRepository.findByPhaseIgnoreCase(phase).stream()
+                .map(this::convertToModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Pattern> getPatternsByStatus(String status) {
+        return patternRepository.findByStatusIgnoreCase(status).stream()
+                .map(this::convertToModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public Pattern createPattern(Pattern pattern) {
         PatternEntity patternEntity = convertToEntity(pattern);
