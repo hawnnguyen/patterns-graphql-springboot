@@ -40,13 +40,6 @@ The application follows a clean architecture with proper separation of concerns:
 - PatternRepository: JPA repository for pattern operations
 - TagRepository: JPA repository for tag operations
 
-## Database Configuration
-
-- Type: H2 (In-memory)
-- URL: jdbc:h2:mem:patternsdb
-- Console: http://localhost:8080/h2-console
-- Username: sa
-- Password: password
 
 ## GraphQL Schema
 
