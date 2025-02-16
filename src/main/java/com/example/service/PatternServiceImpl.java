@@ -1,160 +1,168 @@
 package com.example.service;
 
+import com.example.entity.PatternEntity;
+import com.example.entity.TagEntity;
 import com.example.model.Pattern;
 import com.example.model.Tag;
+import com.example.repository.PatternRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class PatternServiceImpl implements PatternService {
-    private final Map<String, Pattern> patterns = new ConcurrentHashMap<>();
+    private final PatternRepository patternRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public PatternServiceImpl() {
-        // Initialize with sample data
-        Tag tag1 = Tag.builder()
-                .tagId("architecturedesign")
-                .tagName("Architecture Design")
-                .tagValue("Microservices Architecture")
-                .className("fas fa-cubes")
-                .build();
-
-        Tag tag2 = Tag.builder()
-                .tagId("platform")
-                .tagName("Platform")
-                .tagValue("AWS")
-                .build();
-
-        Pattern pattern1 = Pattern.builder()
-                .id("1")
-                .title("ECS with MSK - Rediscache")
-                .name("ECS with MSK - Rediscache")
-                .url("/solution/ECS with MSK - Rediscache")
-                .ring("identify")
-                .quadrant("enterprise")
-                .status("Moved In")
-                .isNew("FALSE")
-                .description("High availability and performance for customer applications with ECS, MSK, and Redis")
-                .pattern(new ArrayList<>())
-                .useCase(new ArrayList<>())
-                .tags(List.of(tag1, tag2))
-                .build();
-
-        // Data Broker Pattern
-        Tag dataBrokerTag1 = Tag.builder()
-                .tagId("architecturedesign")
-                .tagName("Architecture Design")
-                .tagValue("Data Broker")
-                .className("fas fa-network-wired")
-                .build();
-
-        Tag dataBrokerTag2 = Tag.builder()
-                .tagId("architecturedesign")
-                .tagName("Architecture Design")
-                .tagValue("Event Driven Architecture")
-                .className("fa-broadcast-tower")
-                .build();
-
-        Pattern pattern2 = Pattern.builder()
-                .id("15")
-                .title("Data Broker for SaaS, AWS, and On-Premises Systems")
-                .name("Data Broker for SaaS, AWS, and On-Premises Systems")
-                .url("/solution/Data Broker for SaaS, AWS, and On-Premises Systems")
-                .ring("identify")
-                .quadrant("data")
-                .status("Moved In")
-                .isNew("FALSE")
-                .description("Scalable broker system for connecting SaaS, AWS, and on-premises systems.")
-                .pattern(new ArrayList<>())
-                .useCase(List.of("Third-Party Data Connections and Centralized Broker Solutions"))
-                .tags(List.of(dataBrokerTag1, dataBrokerTag2))
-                .build();
-
-        // External API Client Pattern
-        Tag apiClientTag1 = Tag.builder()
-                .tagId("platform")
-                .tagName("Platform")
-                .tagValue("AWS")
-                .build();
-
-        Tag apiClientTag2 = Tag.builder()
-                .tagId("platform")
-                .tagName("Platform")
-                .tagValue("ECS")
-                .build();
-
-        Tag apiClientTag3 = Tag.builder()
-                .tagId("architecturedesign")
-                .tagName("Architecture Design")
-                .tagValue("Microservices Architecture")
-                .className("fas fa-cubes")
-                .build();
-
-        Pattern pattern3 = Pattern.builder()
-                .id("16")
-                .title("External API Client")
-                .name("External API Client")
-                .url("/solution/External API Client")
-                .ring("identify")
-                .quadrant("integration")
-                .status("Moved In")
-                .isNew("FALSE")
-                .description("Providing product capabilities to external clients and internal users via Markets.")
-                .pattern(new ArrayList<>())
-                .useCase(List.of("Public API Design and Security"))
-                .tags(List.of(apiClientTag1, apiClientTag2, apiClientTag3))
-                .build();
-
-        patterns.put(pattern1.getId(), pattern1);
-        patterns.put(pattern2.getId(), pattern2);
-        patterns.put(pattern3.getId(), pattern3);
+    public PatternServiceImpl(PatternRepository patternRepository) {
+        this.patternRepository = patternRepository;
     }
 
-    @Override
-    public Flux<Pattern> getAllPatterns() {
-        return Flux.fromIterable(patterns.values());
+    private Tag convertToModel(TagEntity entity) {
+        if (entity == null) return null;
+        return Tag.builder()
+                .tagId(entity.getTagId())
+                .tagName(entity.getTagName())
+                .tagValue(entity.getTagValue())
+                .className(entity.getClassName())
+                .build();
     }
 
-    @Override
-    public Mono<Pattern> getPatternById(String id) {
-        return Mono.justOrEmpty(patterns.get(id));
+    private TagEntity convertToEntity(Tag model) {
+        if (model == null) return null;
+        TagEntity entity = TagEntity.builder()
+                .tagId(model.getTagId())
+                .tagName(model.getTagName())
+                .tagValue(model.getTagValue())
+                .className(model.getClassName())
+                .build();
+        return entity;
     }
 
-    @Override
-    public Flux<Pattern> getPatternsByQuadrant(String quadrant) {
-        return Flux.fromIterable(patterns.values())
-                .filter(pattern -> pattern.getQuadrant().equalsIgnoreCase(quadrant));
+    private Pattern convertToModel(PatternEntity entity) {
+        if (entity == null) return null;
+        return Pattern.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .name(entity.getName())
+                .url(entity.getUrl())
+                .ring(entity.getRing())
+                .quadrant(entity.getQuadrant())
+                .status(entity.getStatus())
+                .isNew(entity.getIsNew())
+                .description(entity.getDescription())
+                .pattern(entity.getPattern())
+                .useCase(entity.getUseCase())
+                .tags(entity.getTags() != null ? entity.getTags().stream()
+                        .map(this::convertToModel)
+                        .collect(Collectors.toList()) : null)
+                .build();
     }
 
-    @Override
-    public Flux<Pattern> getPatternsByRing(String ring) {
-        return Flux.fromIterable(patterns.values())
-                .filter(pattern -> pattern.getRing().equalsIgnoreCase(ring));
-    }
+    private PatternEntity convertToEntity(Pattern model) {
+        if (model == null) return null;
+        PatternEntity entity = PatternEntity.builder()
+                .id(model.getId())
+                .title(model.getTitle())
+                .name(model.getName())
+                .url(model.getUrl())
+                .ring(model.getRing())
+                .quadrant(model.getQuadrant())
+                .status(model.getStatus())
+                .isNew(model.getIsNew())
+                .description(model.getDescription())
+                .pattern(model.getPattern())
+                .useCase(model.getUseCase())
+                .build();
 
-    @Override
-    public Mono<Pattern> createPattern(Pattern pattern) {
-        patterns.put(pattern.getId(), pattern);
-        return Mono.just(pattern);
-    }
-
-    @Override
-    public Mono<Pattern> updatePattern(String id, Pattern pattern) {
-        if (patterns.containsKey(id)) {
-            pattern.setId(id);
-            patterns.put(id, pattern);
-            return Mono.just(pattern);
+        if (model.getTags() != null) {
+            List<TagEntity> tags = model.getTags().stream()
+                    .map(tag -> {
+                        TagEntity tagEntity = convertToEntity(tag);
+                        tagEntity.setPatternId(model.getId());
+                        return tagEntity;
+                    })
+                    .collect(Collectors.toList());
+            entity.setTags(tags);
         }
-        return Mono.empty();
+
+        return entity;
     }
 
     @Override
-    public Mono<Boolean> deletePattern(String id) {
-        return Mono.just(patterns.remove(id) != null);
+    public List<Pattern> getAllPatterns() {
+        return patternRepository.findAll().stream()
+                .map(this::convertToModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Pattern getPatternById(String id) {
+        return patternRepository.findById(id)
+                .map(this::convertToModel)
+                .orElse(null);
+    }
+
+    @Override
+    public List<Pattern> getPatternsByQuadrant(String quadrant) {
+        return patternRepository.findByQuadrantIgnoreCase(quadrant).stream()
+                .map(this::convertToModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Pattern> getPatternsByRing(String ring) {
+        return patternRepository.findByRingIgnoreCase(ring).stream()
+                .map(this::convertToModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public Pattern createPattern(Pattern pattern) {
+        PatternEntity patternEntity = convertToEntity(pattern);
+        
+        // First save the pattern
+        patternEntity = patternRepository.save(patternEntity);
+        
+        // Get the final pattern ID
+        final String patternId = patternEntity.getId();
+        
+        // Then save each tag
+        if (patternEntity.getTags() != null) {
+            patternEntity.getTags().forEach(tag -> {
+                tag.setPatternId(patternId);
+                entityManager.persist(tag);
+            });
+            entityManager.flush();
+        }
+        
+        return convertToModel(patternEntity);
+    }
+
+    @Override
+    public Pattern updatePattern(String id, Pattern pattern) {
+        if (patternRepository.existsById(id)) {
+            PatternEntity entity = convertToEntity(pattern);
+            entity.setId(id);
+            return convertToModel(patternRepository.save(entity));
+        }
+        return null;
+    }
+
+    @Override
+    public boolean deletePattern(String id) {
+        if (patternRepository.existsById(id)) {
+            patternRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

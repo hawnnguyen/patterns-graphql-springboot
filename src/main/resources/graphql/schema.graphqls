@@ -51,6 +51,6 @@ type Query {
 
 type Mutation {
     createPattern(pattern: PatternInput!): Pattern!
-    updatePattern(id: ID!, pattern: PatternInput!): Pattern!
+    updatePattern(id: ID!, pattern: PatternInput!): Pattern
     deletePattern(id: ID!): Boolean!
 }

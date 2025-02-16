@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pattern {
+public class PatternInput {
     private String id;
     private String title;
     private String name;

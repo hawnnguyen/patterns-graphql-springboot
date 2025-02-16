@@ -1,25 +1,54 @@
-# Spring Boot GraphQL Pattern Service
+# Spring Boot GraphQL Pattern Service DEMO
 
-A reactive Spring Boot application demonstrating GraphQL implementation with WebFlux, showcasing a pattern management system.
+A DEMO Spring Boot application demonstrating GraphQL implementation with Spring MVC and JPA, showcasing a pattern management system with H2 database persistence by HawnSolo
 
 ## Features
 
-- Reactive GraphQL API using Spring WebFlux
-- Pattern management with tags support
+- GraphQL API using Spring MVC
+- H2 Database persistence
+- Pattern and Tag management with proper entity relationships
 - Filtering patterns by quadrant and ring
 - CRUD operations for patterns
-- Comprehensive test coverage
+- Clean separation of models and entities
+- GraphiQL interface for testing
 
 ## Technology Stack
 
 - Java 21
 - Spring Boot 3.2.2
-- Spring WebFlux
+- Spring MVC
+- Spring Data JPA
+- H2 Database
 - GraphQL Spring Boot Starter
 - Project Lombok
 - JUnit 5
 
-## Data Model
+## Architecture
+
+The application follows a clean architecture with proper separation of concerns:
+
+### Models
+- Pattern: Data transfer object for GraphQL operations
+- Tag: Data transfer object for tag information
+- PatternInput: Input type for pattern mutations
+
+### Entities
+- PatternEntity: JPA entity for pattern persistence
+- TagEntity: JPA entity for tag persistence with proper relationships
+
+### Repositories
+- PatternRepository: JPA repository for pattern operations
+- TagRepository: JPA repository for tag operations
+
+## Database Configuration
+
+- Type: H2 (In-memory)
+- URL: jdbc:h2:mem:patternsdb
+- Console: http://localhost:8080/h2-console
+- Username: sa
+- Password: password
+
+## GraphQL Schema
 
 ### Pattern
 ```graphql
@@ -49,382 +78,78 @@ type Tag {
 }
 ```
 
-## GraphQL API
+## Example Queries
 
-### Queries
-
-1. Get All Patterns
+### Get All Patterns
 ```graphql
 query {
   patterns {
     id
     title
-    name
-    url
-    ring
-    quadrant
-    status
-    isNew
-    description
     tags {
       tagId
       tagName
-      tagValue
-      className
     }
   }
 }
 ```
 
-2. Get Pattern by ID
-```graphql
-query {
-  patternById(id: "1") {
-    id
-    title
-    name
-    url
-    ring
-    quadrant
-    tags {
-      tagId
-      tagName
-      tagValue
-    }
-  }
-}
-```
-
-3. Get Patterns by Quadrant
-```graphql
-query {
-  patternsByQuadrant(quadrant: "enterprise") {
-    id
-    name
-    quadrant
-    tags {
-      tagValue
-    }
-  }
-}
-```
-
-4. Get Patterns by Ring
-```graphql
-query {
-  patternsByRing(ring: "identify") {
-    id
-    name
-    ring
-    tags {
-      tagValue
-    }
-  }
-}
-```
-
-### Mutations
-
-1. Create Pattern
+### Create Pattern
 ```graphql
 mutation {
   createPattern(pattern: {
-    id: "2"
-    title: "Test Pattern"
-    name: "Test Pattern"
-    url: "/solution/test-pattern"
-    ring: "adopt"
-    quadrant: "application design"
-    status: "Moved In"
-    isNew: "FALSE"
-    description: "Test pattern description"
-    pattern: []
-    useCase: ["Test Use Case"]
+    id: "17"
+    title: "New Pattern"
+    name: "New Pattern"
+    ring: "identify"
+    quadrant: "enterprise"
+    status: "New"
+    isNew: "TRUE"
+    description: "A new pattern description"
     tags: [{
-      tagId: "architecturedesign"
-      tagName: "Architecture Design"
-      tagValue: "Microservices Architecture"
-      className: "fas fa-cubes"
+      tagId: "tag17"
+      tagName: "Technology"
+      tagValue: "GraphQL"
     }]
   }) {
     id
-    name
-    quadrant
+    title
     tags {
+      tagId
+      tagName
       tagValue
     }
   }
-}
-```
-
-2. Update Pattern
-```graphql
-mutation {
-  updatePattern(
-    id: "2"
-    pattern: {
-      id: "2"
-      title: "Updated Pattern"
-      name: "Updated Pattern"
-      url: "/solution/updated-pattern"
-      ring: "identify"
-      quadrant: "enterprise"
-      status: "Moved In"
-      isNew: "FALSE"
-      description: "Updated description"
-      pattern: []
-      useCase: []
-      tags: []
-    }
-  ) {
-    id
-    name
-    description
-  }
-}
-```
-
-3. Delete Pattern
-```graphql
-mutation {
-  deletePattern(id: "2")
 }
 ```
 
 ## Running the Application
 
-1. Build the project:
-```bash
-mvn clean package
-```
+1. Clone the repository
+2. Build the project: `mvn clean package`
+3. Run the application: `mvn spring-boot:run`
+4. Access GraphiQL: http://localhost:8080/graphiql
+5. Access H2 Console: http://localhost:8080/h2-console
 
-2. Run the application:
-```bash
-java -jar target/pattern-service-1.0.0.jar
-```
+## Recent Updates
 
-3. Access the GraphQL endpoint at:
-```
-http://localhost:8080/graphql
-```
+1. Migrated from WebFlux to Spring MVC
+2. Added H2 database persistence
+3. Separated models and entities:
+   - Created distinct model classes for GraphQL operations
+   - Implemented JPA entities for persistence
+   - Added proper entity relationships
+4. Improved error handling and GraphQL configuration
+5. Added comprehensive GraphiQL support for testing
 
 ## Testing
 
-The application includes comprehensive test coverage for both service and controller layers:
+The application includes unit tests for:
+- GraphQL resolvers
+- Service layer
+- Repository layer
+- Entity relationships
 
-- `PatternServiceTest`: Unit tests for service layer functionality
-- `PatternControllerTest`: Integration tests for GraphQL endpoints
+## Contributing
 
-Run tests using:
-```bash
-mvn test
-```
-
-## GraphiQL Examples
-
-The application includes GraphiQL, an in-browser IDE for exploring GraphQL. Access it at:
-```
-http://localhost:8080/graphiql
-```
-
-### Example 1: Query All Patterns
-
-Request:
-```graphql
-query {
-  patterns {
-    id
-    name
-    quadrant
-    ring
-    tags {
-      tagId
-      tagName
-      tagValue
-      className
-    }
-  }
-}
-```
-
-Response:
-```json
-{
-  "data": {
-    "patterns": [
-      {
-        "id": "1",
-        "name": "ECS with MSK - Rediscache",
-        "quadrant": "enterprise",
-        "ring": "identify",
-        "tags": [
-          {
-            "tagId": "architecturedesign",
-            "tagName": "Architecture Design",
-            "tagValue": "Microservices Architecture",
-            "className": "fas fa-cubes"
-          },
-          {
-            "tagId": "platform",
-            "tagName": "Platform",
-            "tagValue": "AWS"
-          }
-        ]
-      },
-      {
-        "id": "15",
-        "name": "Data Broker for SaaS, AWS, and On-Premises Systems",
-        "quadrant": "data",
-        "ring": "identify",
-        "tags": [
-          {
-            "tagId": "architecturedesign",
-            "tagName": "Architecture Design",
-            "tagValue": "Data Broker",
-            "className": "fas fa-network-wired"
-          },
-          {
-            "tagId": "architecturedesign",
-            "tagName": "Architecture Design",
-            "tagValue": "Event Driven Architecture",
-            "className": "fa-broadcast-tower"
-          }
-        ]
-      },
-      {
-        "id": "16",
-        "name": "External API Client",
-        "quadrant": "integration",
-        "ring": "identify",
-        "tags": [
-          {
-            "tagId": "platform",
-            "tagName": "Platform",
-            "tagValue": "AWS"
-          },
-          {
-            "tagId": "platform",
-            "tagName": "Platform",
-            "tagValue": "ECS"
-          },
-          {
-            "tagId": "architecturedesign",
-            "tagName": "Architecture Design",
-            "tagValue": "Microservices Architecture",
-            "className": "fas fa-cubes"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### Example 2: Query Patterns by Quadrant
-
-Request:
-```graphql
-query {
-  patternsByQuadrant(quadrant: "data") {
-    id
-    name
-    quadrant
-    tags {
-      tagValue
-      className
-    }
-  }
-}
-```
-
-Response:
-```json
-{
-  "data": {
-    "patternsByQuadrant": [
-      {
-        "id": "15",
-        "name": "Data Broker for SaaS, AWS, and On-Premises Systems",
-        "quadrant": "data",
-        "tags": [
-          {
-            "tagValue": "Data Broker",
-            "className": "fas fa-network-wired"
-          },
-          {
-            "tagValue": "Event Driven Architecture",
-            "className": "fa-broadcast-tower"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### Example 3: Query Patterns by Ring
-
-Request:
-```graphql
-query {
-  patternsByRing(ring: "identify") {
-    id
-    name
-    ring
-    quadrant
-  }
-}
-```
-
-Response:
-```json
-{
-  "data": {
-    "patternsByRing": [
-      {
-        "id": "1",
-        "name": "ECS with MSK - Rediscache",
-        "ring": "identify",
-        "quadrant": "enterprise"
-      },
-      {
-        "id": "15",
-        "name": "Data Broker for SaaS, AWS, and On-Premises Systems",
-        "ring": "identify",
-        "quadrant": "data"
-      },
-      {
-        "id": "16",
-        "name": "External API Client",
-        "ring": "identify",
-        "quadrant": "integration"
-      }
-    ]
-  }
-}
-```
-
-## Recent Changes
-
-1. Updated GraphQL Schema:
-   - Added new Tag type for better organization
-   - Enhanced Pattern type with additional fields
-   - Added new query methods for filtering
-
-2. Java Model Updates:
-   - Added Tag class with Lombok annotations
-   - Updated Pattern class with new fields and tag support
-   - Implemented builder pattern with toBuilder support
-
-3. Service Layer:
-   - Added methods for querying by quadrant and ring
-   - Implemented CRUD operations with reactive support
-   - Added sample data initialization
-
-4. Testing Improvements:
-   - Added comprehensive test cases
-   - Implemented test ordering for better isolation
-   - Added assertions for new fields and relationships
-
-
-[def]: docs/graphql-interface-pattern.png
+Feel free to submit issues and enhancement requests.
