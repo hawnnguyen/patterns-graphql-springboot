@@ -48,6 +48,9 @@ The application follows a clean architecture with proper separation of concerns:
 4. Access GraphiQL: http://localhost:8080/graphiql
 5. Access H2 Console: http://localhost:8080/h2-console
 
+## GraphQL Interface
+
+![GraphQL Interface](docs/graphql-interface-pattern.png)
 
 ## GraphQL Schema
 
